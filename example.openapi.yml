@@ -1,0 +1,21 @@
+openapi: 3.0.3
+info:
+  title: Example API
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /hi:
+    get:
+      summary: Get some data
+      responses:
+        200:
+          description: ""
+
+components:
+  securitySchemes:
+    OAuth:
+      type: openIdConnect
+      openIdConnectUrl: ""
