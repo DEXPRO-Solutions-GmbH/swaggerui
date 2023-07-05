@@ -21,7 +21,7 @@ func TestNewHandlerParsed(t *testing.T) {
 
 	handler, err := NewHandler(
 		exampleSpec,
-		WithOIDC("OAuth", "https://keycloak.k8s.staging.squeeze.one/realms/dexpro-dev/.well-known/openid-configuration"),
+		WithOIDC("OAuth", "https://your.idp.domain/realms/some-realm/.well-known/openid-configuration"),
 		WithAddServerUrls())
 
 	require.NoError(t, err)
