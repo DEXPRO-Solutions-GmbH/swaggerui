@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1
+
+### Fixed
+
+- Add Documentation of central types to improve package usability.
+
 ## 1.0.0
 
 ### Added
