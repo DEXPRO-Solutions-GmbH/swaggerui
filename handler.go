@@ -14,6 +14,8 @@ import (
 //go:embed dist
 var distFs embed.FS
 
+// Handler is responsible for both serving the SwaggerUI and the associated OpenAPI
+// spec.
 type Handler struct {
 	specYML []byte
 	FS      http.FileSystem
@@ -49,14 +51,19 @@ func NewHandler(specYML []byte, opts ...Option) (*Handler, error) {
 	return h, nil
 }
 
+// Register is used to register the Handler on a gin router.
 func (handler *Handler) Register(router gin.IRoutes) {
 	//router.GET("/openapi.yml", handler.GetSpec)
 	router.GET("/openapi.yml", handler.GetSpec)
 	router.StaticFS("/swagger-ui", handler.FS)
 }
 
+// Option objects used to construct Handler objects.
 type Option func(handler *Handler)
 
+// WithOIDC adds a HandlerMiddleware which replaces the OpenIDConnect URL of a given security scheme
+// with the given url. This is useful if your API is secured by an OIDC provider and you want
+// to make the provider your API trusts configurable.
 func WithOIDC(securitySchemeName, oidcURL string) Option {
 	return func(handler *Handler) {
 		handler.middlewares = append(handler.middlewares, func(ctx *gin.Context, spec Spec) {
@@ -65,6 +72,11 @@ func WithOIDC(securitySchemeName, oidcURL string) Option {
 	}
 }
 
+// WithAddServerUrls adds a HandlerMiddleware which adds the requests host to the OpenAPI specs
+// server list, once with HTTP, once with HTTPS.
+//
+// This is meant to be used on APIs which could be served under any hostname and where
+// you don't want to hardcode the hostname in your spec.
 func WithAddServerUrls() Option {
 	return func(handler *Handler) {
 		handler.middlewares = append(handler.middlewares, func(ctx *gin.Context, spec Spec) {
@@ -89,6 +101,8 @@ func WithMiddleware(mw HandlerMiddleware) Option {
 // information from the request.
 type HandlerMiddleware func(ctx *gin.Context, spec Spec)
 
+// GetSpec is the gin handler function used to serve the OpenAPI spec
+// of this handler.
 func (handler *Handler) GetSpec(ctx *gin.Context) {
 	// Note: The spec is unmarshaled from it's yml source on every request.
 	// This is on purpose because it allows us to have an unmodified, request-scoped copy of the spec
