@@ -56,6 +56,7 @@ func (handler *Handler) Register(router gin.IRoutes) {
 	//router.GET("/openapi.yml", handler.GetSpec)
 	router.GET("/openapi.yml", handler.GetSpec)
 	router.StaticFS("/swagger-ui", handler.FS)
+	router.StaticFS("/swaggerui", handler.FS)
 }
 
 // Option objects used to construct Handler objects.
