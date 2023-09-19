@@ -4,7 +4,7 @@
 
 ### Added
 
--
+- Add `/swaggerui` as alternative to `swagger-ui`
 
 ### Fixed
 
