@@ -80,15 +80,37 @@ func WithOIDC(securitySchemeName, oidcURL string) Option {
 // you don't want to hardcode the hostname in your spec.
 func WithAddServerUrls() Option {
 	return func(handler *Handler) {
-		handler.middlewares = append(handler.middlewares, func(ctx *gin.Context, spec Spec) {
-			path := ctx.Request.URL.Path
-			path = strings.TrimSuffix(path, "/openapi.yml")
-			httpsUrl := fmt.Sprintf("https://%s%s", ctx.Request.Host, path)
-			httpUrl := fmt.Sprintf("http://%s%s", ctx.Request.Host, path)
-			spec.AddServerUrl(httpUrl)
-			spec.AddServerUrl(httpsUrl)
-		})
+		mw := newServerURLMiddleware(false)
+		handler.middlewares = append(handler.middlewares, mw)
 	}
+}
+
+// WithReplaceServerUrls is the same as WithAddServerUrls but it will replace all previously
+// defined server urls.
+func WithReplaceServerUrls() Option {
+	return func(handler *Handler) {
+		mw := newServerURLMiddleware(true)
+		handler.middlewares = append(handler.middlewares, mw)
+	}
+}
+
+// newServerURLMiddleware returns a new HandlerMiddleware which adds the requests host to the OpenAPI specs.
+//
+// The replace parameter controls whether the middleware should replace all previously defined server urls or simply add
+// to the list.
+func newServerURLMiddleware(replace bool) HandlerMiddleware {
+	mw := func(ctx *gin.Context, spec Spec) {
+		path := ctx.Request.URL.Path
+		path = strings.TrimSuffix(path, "/openapi.yml")
+		httpsUrl := fmt.Sprintf("https://%s%s", ctx.Request.Host, path)
+		httpUrl := fmt.Sprintf("http://%s%s", ctx.Request.Host, path)
+		if replace {
+			spec.RemoveServerURLs()
+		}
+		spec.AddServerUrl(httpUrl)
+		spec.AddServerUrl(httpsUrl)
+	}
+	return mw
 }
 
 // WithMiddleware applies the given HandlerMiddleware to every request.

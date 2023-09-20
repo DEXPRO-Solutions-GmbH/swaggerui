@@ -5,6 +5,7 @@
 ### Added
 
 - Add `/swaggerui` as alternative to `swagger-ui`
+- Add `WithReplaceServerUrls` option as alternative to `WithAddServerUrls`
 
 ### Fixed
 

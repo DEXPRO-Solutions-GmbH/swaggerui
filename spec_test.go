@@ -77,3 +77,13 @@ func TestParseSpec(t *testing.T) {
 		assert.IsType(t, Spec{}, spec["info"], "child properties of spec have unexpected type")
 	})
 }
+
+func TestSpec_RemoveServerURLs(t *testing.T) {
+	spec, err := ParseSpecYAML(exampleSpec)
+	require.NoError(t, err)
+	require.Len(t, spec["servers"], 1)
+
+	spec.RemoveServerURLs()
+	_, exists := spec["servers"]
+	assert.False(t, exists, "servers property should be removed")
+}

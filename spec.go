@@ -81,6 +81,11 @@ func (spec Spec) AddServerUrl(serverUrl string) {
 	spec["servers"] = specServers
 }
 
+// RemoveServerURLs removes all server urls and removes the servers key.
+func (spec Spec) RemoveServerURLs() {
+	delete(spec, "servers")
+}
+
 func ParseSpecYAML(raw []byte) (Spec, error) {
 	var spec Spec
 	if err := yaml.Unmarshal(raw, &spec); err != nil {
