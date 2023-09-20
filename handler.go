@@ -53,10 +53,11 @@ func NewHandler(specYML []byte, opts ...Option) (*Handler, error) {
 
 // Register is used to register the Handler on a gin router.
 func (handler *Handler) Register(router gin.IRoutes) {
-	//router.GET("/openapi.yml", handler.GetSpec)
 	router.GET("/openapi.yml", handler.GetSpec)
 	router.StaticFS("/swagger-ui", handler.FS)
-	router.StaticFS("/swaggerui", handler.FS)
+	router.GET("/swaggerui", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusPermanentRedirect, "/swagger-ui")
+	})
 }
 
 // Option objects used to construct Handler objects.
