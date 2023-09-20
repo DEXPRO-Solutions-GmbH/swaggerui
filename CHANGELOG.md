@@ -1,5 +1,15 @@
 # Changelog
 
+## Next
+
+### Added
+
+- Add `/swaggerui` as alternative to `swagger-ui`
+
+### Fixed
+
+- 
+
 ## 1.0.1
 
 ### Fixed
