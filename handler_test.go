@@ -3,8 +3,12 @@ package swaggerui
 import (
 	_ "embed"
 	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"testing"
@@ -13,8 +17,8 @@ import (
 //go:embed example.openapi.yml
 var exampleSpec []byte
 
-func TestNewHandlerParsed(t *testing.T) {
-	t.Skip("This example is only for manual testing of the handler.")
+func TestHandler(t *testing.T) {
+	gin.SetMode(gin.TestMode)
 
 	engine := gin.Default()
 	engine.RedirectTrailingSlash = true
@@ -27,11 +31,17 @@ func TestNewHandlerParsed(t *testing.T) {
 	require.NoError(t, err)
 	handler.Register(engine)
 
-	fmt.Println("Try these URLS")
-	fmt.Printf("- openapi: %s/openapi.yml\n", "http://localhost:8044")
-	fmt.Printf("- swagger ui: %s/swagger-ui\n", "http://localhost:8044")
+	testserver := httptest.NewServer(engine)
+	defer testserver.Close()
 
-	_ = engine.Run(":8044")
+	t.Run("responds with YML", func(t *testing.T) {
+		res, err := http.Get(fmt.Sprintf("%s/openapi.yml", testserver.URL))
+		require.NoError(t, err)
+		require.Equal(t, http.StatusOK, res.StatusCode)
+		assert.Equal(t, "application/x-yaml; charset=utf-8", res.Header.Get("Content-Type"))
 
-	select {}
+		body, err := io.ReadAll(res.Body)
+		require.NoError(t, err)
+		assert.GreaterOrEqual(t, len(body), len(exampleSpec), "handler should respond with spec which is at least as long as the example spec")
+	})
 }
