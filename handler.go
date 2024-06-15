@@ -56,7 +56,7 @@ func (handler *Handler) Register(router gin.IRoutes) {
 	router.GET("/openapi.yml", handler.GetSpec)
 	router.StaticFS("/swagger-ui", handler.FS)
 	router.GET("/swaggerui", func(ctx *gin.Context) {
-		ctx.Redirect(http.StatusPermanentRedirect, "/swagger-ui")
+		ctx.Redirect(http.StatusPermanentRedirect, getRedirectPath(ctx))
 	})
 }
 
@@ -143,4 +143,8 @@ func (handler *Handler) GetSpec(ctx *gin.Context) {
 	}
 
 	ctx.YAML(200, spec)
+}
+
+func getRedirectPath(_ *gin.Context) string {
+	return "/swagger-ui"
 }

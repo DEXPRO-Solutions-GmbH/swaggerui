@@ -45,3 +45,7 @@ func TestHandler(t *testing.T) {
 		assert.GreaterOrEqual(t, len(body), len(exampleSpec), "handler should respond with spec which is at least as long as the example spec")
 	})
 }
+
+func TestGetRedirectPath(t *testing.T) {
+	require.Equal(t, "/swagger-ui", getRedirectPath(nil))
+}
