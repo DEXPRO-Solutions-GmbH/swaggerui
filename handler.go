@@ -55,9 +55,7 @@ func NewHandler(specYML []byte, opts ...Option) (*Handler, error) {
 func (handler *Handler) Register(router gin.IRoutes) {
 	router.GET("/openapi.yml", handler.GetSpec)
 	router.StaticFS("/swagger-ui", handler.FS)
-	router.GET("/swaggerui", func(ctx *gin.Context) {
-		ctx.Redirect(http.StatusPermanentRedirect, getRedirectPath(ctx))
-	})
+	router.GET("/swaggerui", handler.Redirect)
 }
 
 // Option objects used to construct Handler objects.
@@ -145,6 +143,16 @@ func (handler *Handler) GetSpec(ctx *gin.Context) {
 	ctx.YAML(200, spec)
 }
 
-func getRedirectPath(_ *gin.Context) string {
+func (handler *Handler) Redirect(ctx *gin.Context) {
+	ctx.Redirect(http.StatusPermanentRedirect, getRedirectPath(ctx))
+}
+
+func getRedirectPath(ctx *gin.Context) string {
+	if ctx != nil && ctx.Request != nil && ctx.Request.URL != nil {
+		p := ctx.Request.URL.Path
+		p = strings.TrimSuffix(p, "/swaggerui")
+		return p + "/swagger-ui"
+	}
+
 	return "/swagger-ui"
 }

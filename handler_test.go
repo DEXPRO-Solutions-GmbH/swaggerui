@@ -47,5 +47,58 @@ func TestHandler(t *testing.T) {
 }
 
 func TestGetRedirectPath(t *testing.T) {
-	require.Equal(t, "/swagger-ui", getRedirectPath(nil))
+	gin.SetMode(gin.TestMode)
+
+	t.Run("returns proper path when using no prefix", func(t *testing.T) {
+		engine := gin.New()
+		testServer := httptest.NewServer(engine)
+		defer testServer.Close()
+
+		handler := &Handler{}
+
+		// Register redirect handler on prefixed path
+		engine.Any("/swaggerui", handler.Redirect)
+
+		client := testServer.Client()
+
+		redirectCalled := false
+
+		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			require.Equal(t, "/swagger-ui", req.URL.Path)
+			redirectCalled = true
+			return nil
+		}
+
+		_, err := client.Get(testServer.URL + "/swaggerui")
+		assert.NoError(t, err)
+
+		require.True(t, redirectCalled, "handler did not respond with redirect")
+	})
+
+	t.Run("returns proper path when using prefix", func(t *testing.T) {
+		engine := gin.New()
+		testServer := httptest.NewServer(engine)
+		defer testServer.Close()
+
+		handler := &Handler{}
+
+		// Register redirect handler on prefixed path
+		group := engine.Group("/prefix")
+		group.Any("/swaggerui", handler.Redirect)
+
+		client := testServer.Client()
+
+		redirectCalled := false
+
+		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			require.Equal(t, "/prefix/swagger-ui", req.URL.Path)
+			redirectCalled = true
+			return nil
+		}
+
+		_, err := client.Get(testServer.URL + "/prefix/swaggerui")
+		assert.NoError(t, err)
+
+		require.True(t, redirectCalled, "handler did not respond with redirect")
+	})
 }
