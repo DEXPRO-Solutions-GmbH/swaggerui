@@ -11,3 +11,15 @@ expose your OpenAPI spec via SwaggerUI.
 ```shell
 go get github.com/DEXPRO-Solutions-GmbH/swaggerui
 ```
+
+## Maintenance
+
+### SwaggerUI upgrade
+
+Every then and now we want to upgrade the builtin SwaggerUI.
+
+Do do that, go to https://github.com/swagger-api/swagger-ui and download the latest release.
+
+Unzip the `/dist` directory from that release and replace all contents of the local `/dist` directory.
+
+Then, 
