@@ -38,7 +38,7 @@ func TestHandler(t *testing.T) {
 		res, err := http.Get(fmt.Sprintf("%s/openapi.yml", testserver.URL))
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, res.StatusCode)
-		assert.Equal(t, "application/x-yaml; charset=utf-8", res.Header.Get("Content-Type"))
+		assert.Equal(t, "application/yaml; charset=utf-8", res.Header.Get("Content-Type"))
 
 		body, err := io.ReadAll(res.Body)
 		require.NoError(t, err)
