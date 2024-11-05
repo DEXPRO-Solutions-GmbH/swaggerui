@@ -22,4 +22,4 @@ Do do that, go to https://github.com/swagger-api/swagger-ui and download the lat
 
 Unzip the `/dist` directory from that release and replace all contents of the local `/dist` directory.
 
-Then, 
+Then, apply the git patch `patch-swagger-ui-initializer.patch`.
